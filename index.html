@@ -59,10 +59,6 @@
     input[type="file"] {
       display: none;
     }
-    input[name="character_name"] {
-    font-size: 20px; /* Increase or decrease this value as needed */
-    font-weight: bold;
-    }
 
     /* 3. PORTRAIT SHEET CONTAINERS (Parchment Paper Texture) */
     .sheet-container {
@@ -135,6 +131,10 @@
     textarea {
       resize: vertical;
       height: 90px;
+    }
+    input[name="character_name"] {
+    font-size: 20px; /* Increase or decrease this value as needed */
+    font-weight: bold;
     }
 
     /* Attribute Box Header */
@@ -707,7 +707,7 @@
           <p>To use magic, a character must choose to allocate some of their attribute dice to the Attunement score. Characters who are attuned and also have Dice in Spell-weaving may declare they are weaving a spell, which has some limitations and caveats.</p>
           <ol>
             <li>A Spell-weaver may possess more skill dice in spell-weaving than they have in Attunement, but using more Skill Dice than Attunement is <strong>over channeling</strong>. Over channeling magic drains the weaver, potentially warping and twisting their bodies/minds. For every over-channel they must take a wound (Mental or Physical). At the end of the scene or next rest they roll against Might or Presence TN 15 and, if failed, the respective mutations table (Metamorphic).</li>
-            <li>Every successful cast drains the spell-weaver; their available Spell-weaving dice pool decreases by 1 each time. They may continue to weave spells at 0, but each cast is over-channelled.</li>
+            <li>Every successful cast drains the spell-weaver; their available Spell-weaving dice pool decreases by 1/spell use for the duration of the scene. They may continue to weave spells at 0, but each cast is over-channelled.</li>
             <li>Weaving Magic takes time; in combat a spell-weaver must declare they are weaving. If they are struck, they must make a Presence (Willpower) roll to not lose the spell. The spell takes effect at the end of the round.</li>
           </ol>
           <p style="margin-bottom:0;">When weaving a spell is declared, the expecting caster must declare the effect they’re weaving and then look at the casting tables to determine TN, using the highest.</p>
@@ -716,7 +716,7 @@
 
       <!-- LEFT COLUMN PAGE 2: RANGE, DURATION, TARGET -->
       <div class="column">
-        <!-- Hero Points Reference Box -->
+      <!-- Hero Points Reference Box -->
 <div class="frame-box">
   <div class="frame-title">Hero Points</div>
   <div class="rules-text">
