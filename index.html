@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Six Character Sheet</title>
+  <style>
+    /* Page & Print Setup for Portrait Orientation */
+    @page {
+      size: portrait;
+      margin: 8mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    /* 1. OUTER PAGE BACKGROUND TEXTURE (Dark Gaming Slate / Table Top) */
+    body {
+      background-color: #1a1b26;
+      background-image: 
+        radial-gradient(circle at 50% 50%, #292a3a 0%, #12131a 100%),
+        repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 1px, transparent 0, transparent 40px);
+      margin: 0;
+      padding: 15px;
+      color: #111;
+      min-height: 100vh;
+    }
+
+    /* 2. OPAQUE SAVE / LOAD CONTROL PANEL */
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin: 0 auto 15px auto;
+      max-width: 1000px;
+      background: #2b2d42;
+      padding: 10px 16px;
+      border-radius: 6px;
+      align-items: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      border: 1px solid #4a4e69;
+    }
+    .controls button, .controls label.btn {
+      background-color: #4a4e69;
+      color: white;
+      border: 1px solid #9a8c98;
+      padding: 6px 14px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 4px;
+      display: inline-block;
+      font-size: 13px;
+    }
+    .controls button:hover, .controls label.btn:hover {
+      background-color: #6c5ce7;
+    }
+    input[type="file"] {
+      display: none;
+    }
+
+    /* 3. PORTRAIT SHEET CONTAINERS (Parchment Paper Texture) */
+    .sheet-container {
+      position:relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 1000px;
+      margin: 0 auto;
+      background-color: #f3efe6;
+      background-image: 
+        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 0),
+        linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(0,0,0,0.05));
+      background-size: 20px 20px, 100% 100%;
+      padding: 16px;
+      border: 3px solid #111;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+    }
+
+    /* Page 2 Grid & Spacing */
+    .sheet-container.page-2 {
+      margin-top: 25px;
+      grid-template-columns: 1fr 1fr; /* 2-column layout for Magic Rules & TN tables */
+    }
+
+    .full-width-col {
+      grid-column: span 2;
+    }
+
+    /* 4. SOLID ENCAPSULATING FRAMES & TRANSPARENT INNER CONTENT */
+    .frame-box {
+      border: 2px solid #111;
+      background: transparent;
+      margin-bottom: 12px;
+      padding: 8px;
+      position: relative;
+    }
+
+    /* Frame Header Bar */
+    .frame-title {
+      background: rgba(0, 0, 0, 0.08);
+      color: #111;
+      font-weight: bold;
+      text-transform: uppercase;
+      padding: 4px 8px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      border: 1px solid #111;
+      margin: -8px -8px 8px -8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Form Inputs & Textareas */
+    input[type="text"], input[type="number"], textarea {
+      width: 100%;
+      border: 1px solid #222;
+      background: transparent;
+      padding: 3px 5px;
+      font-size: 12px;
+      outline: none;
+      color: #000;
+      font-weight: 500;
+    }
+    input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+      border-color: #000;
+      background-color: rgba(255, 255, 255, 0.25);
+    }
+    textarea {
+      resize: vertical;
+      height: 90px;
+    }
+
+    /* Attribute Box Header */
+    .attr-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .attr-title {
+      font-size: 24px;
+      font-weight: 800;
+      font-style: italic;
+      margin-left: 30px;
+    }
+    input.attr-box {
+      width: 70px;          /* Change this value to adjust width (e.g. 60px, 70px, 80px) */
+      height: 40px;         /* Change height if needed */
+      flex-shrink: 0;       /* Prevents flexbox from squeezing the box */
+      border: 2px solid #111;
+      background: transparent;
+      text-align: center;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    /* Skill Tables */
+    .skill-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      background: transparent;
+    }
+    .skill-table th {
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px solid #222;
+      padding: 3px;
+      text-align: center;
+    }
+    .skill-table td {
+      border: 1px solid #444;
+      padding: 2px 4px;
+      background: transparent;
+    }
+    .skill-table tr:nth-child(even) {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    .skill-table input {
+      text-align: center;
+      padding: 1px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+    }
+
+    .skill-table input.spec-input {
+      text-align: left;
+      font-weight: normal;
+    }
+
+    .skill-table .col-stat {
+      width: 53px;
+      min-width: 53px;
+      max-width: 53px;
+    }
+     .skill-table th:nth-child(2) {
+  width: 40px; /* Change this pixel value to make the column wider or narrower */
+}
+
+    /* Radio Button Black Fill */
+    input[type="radio"] {
+      accent-color: #111111;
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+      vertical-align: middle;
+    }
+
+    /* Wounds Table */
+    .wounds-table {
+      width: 100%;
+      font-size: 11px;
+      border-collapse: collapse;
+      background: transparent;
+    }
+    .wounds-table td, .wounds-table th {
+      text-align: center;
+      padding: 3px 1px;
+      border: 1px solid #444;
+      background: transparent;
+    }
+    .wounds-table th {
+      background: rgba(0, 0, 0, 0.08);
+    }
+    .wounds-note {
+      font-size: 10px;
+      color: #333;
+      margin-top: 5px;
+      line-height: 1.2;
+    }
+
+    /* Defenses Grid */
+    .def-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-size: 11px;
+      margin-bottom: 8px;
+    }
+    .def-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      border: 1px solid #222;
+      padding: 3px 6px;
+      background: transparent;
+    }
+    .def-item input {
+      width: 40px;
+      text-align: center;
+    }
+
+    /* Hero & XP Points Boxes */
+    .points-container {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+      font-size: 10px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+    .points-box {
+      width: 55px;
+      height: 38px;
+      margin-top: 4px;
+      border: 2px solid #111;
+      text-align: center;
+      font-size: 15px;
+      font-weight: bold;
+      background: transparent;
+    }
+
+    /* Target Number (TN) Tables for Magic */
+    .tn-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      margin-top: 4px;
+    }
+    .tn-table th {
+      background: rgba(0, 0, 0, 0.08);
+      border: 1px solid #222;
+      padding: 4px;
+      text-align: left;
+    }
+    .tn-table td {
+      border: 1px solid #444;
+      padding: 4px 6px;
+      vertical-align: top;
+    }
+    .tn-table tr:nth-child(even) {
+      background: rgba(0, 0, 0, 0.03);
+    }
+    .tn-badge {
+      font-weight: bold;
+      white-space: nowrap;
+      width: 110px;
+    }
+    .rules-text {
+      font-size: 11px;
+      line-height: 1.45;
+      color: #111;
+    }
+    .rules-text p {
+      margin: 0 0 8px 0;
+    }
+    .rules-text ol {
+      margin: 4px 0 8px 0;
+      padding-left: 18px;
+    }
+    .rules-text li {
+      margin-bottom: 6px;
+    }
+    .rules-note {
+      font-size: 10px;
+      font-style: italic;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    /* Print Formatting */
+    @media print {
+      body {
+        padding: 0;
+        background: white;
+      }
+      .controls {
+        display: none;
+      }
+      .sheet-container {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        max-width: 100%;
+      }
+      .sheet-container.page-2 {
+        margin-top: 0;
+        page-break-before: always;
+        break-before: page;
+      }
+    }
+    #portrait-container {
+  display: block;
+}
+
+#portrait {
+  position: relative;
+  min-height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: #f3efe6; /* <-- REQUIRED for mix-blend-mode: multiply */
+  border: 1px dashed #666;    /* Dashed border indicates clickable upload area */
+  cursor: pointer;
+}
+
+#portrait img {
+  display: block;
+  max-width: 100% !important;
+  max-height: 200px !important;
+  object-fit: contain;
+  mix-blend-mode: multiply; /* Blends white image backgrounds with parchment */
+}
+
+/* Hide image tag when empty */
+#portrait img[src=""], 
+#portrait img:not([src]) {
+  display: none;
+}
+
+/* Placeholder text when no image is uploaded */
+#portrait-placeholder {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Hide placeholder when image is present */
+#portrait:has(img[src]:not([src=""])) #portrait-placeholder {
+  display: none;
+}
+  </style>
+</head>
+<body>
+
+  <!-- CONTROL PANEL (OPAQUE SAVE / LOAD ACTIONS) -->
+  <div class="controls">
+    <button onclick="saveToLocalStorage()">Save (Local)</button>
+    <button onclick="loadFromLocalStorage()">Load (Local)</button>
+    <button onclick="exportJSON()">Export JSON File</button>
+    <label class="btn" for="fileInput">Import JSON File</label>
+    <input type="file" id="fileInput" accept=".json" onchange="importJSON(event)">
+    <button onclick="togglePortrait()">Toggle Portrait</button>
+    <button onclick="window.print()" style="background-color: #2a9d8f;">Print / Save PDF</button>
+    <button onclick="resetSheet()" style="background-color: #e63946; margin-left: auto;">Clear Sheet</button>
+  </div>
+
+  <!-- CHARACTER SHEET CONTAINER (PAGE 1) -->
+  <form id="characterSheet">
+    <div class="sheet-container">
+
+      <!-- COLUMN 1: Basic Info, Portrait, Notes, Wounds, Defenses, XP -->
+      <div class="column">
+        <!-- Character Name -->
+        <div class="frame-box">
+          <div class="frame-title">Character Name</div>
+          <input type="text" name="character_name" placeholder="Name">
+        </div>
+
+        <!-- Character Portrait (Below Name) -->
+       <div class="frame-box" id="portrait-container">
+       <div class="frame-title">Character Portrait</div>
+       <div id="portrait" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" class="non-serialized" accept="image/*" style="display: none;" onchange="load_portrait_file(event)">
+        <span id="portrait-placeholder" class="no-print">Click to upload portrait</span>
+        <img id="portrait-image" alt="Portrait" />
+      </div>
+    </div>
+
+        <!-- Description & Notes -->
+        <div class="frame-box">
+          <div class="frame-title">Description & Notes</div>
+          <textarea name="description_notes"></textarea>
+        </div>
+
+        <!-- Wounds -->
+        <div class="frame-box">
+          <div class="frame-title">Wounds</div>
+          <table class="wounds-table">
+            <thead>
+              <tr>
+                <th style="width: 35px;">Phys.</th>
+                <th>WOUNDS</th>
+                <th style="width: 35px;">Ment.</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="radio" name="phys_wound" value="stunned"></td>
+                <td>0-4 Stunned (-1D*)</td>
+                <td><input type="radio" name="ment_wound" value="stunned"></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="phys_wound" value="wounded"></td>
+                <td>5-9 Wounded (-1D†)</td>
+                <td><input type="radio" name="ment_wound" value="wounded"></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="phys_wound" value="sev_wounded"></td>
+                <td>5-9 Sev. Wounded (-2D†)</td>
+                <td><input type="radio" name="ment_wound" value="sev_wounded"></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="phys_wound" value="incapacitated"></td>
+                <td>10-14 Incapacitated (-3D)</td>
+                <td><input type="radio" name="ment_wound" value="incapacitated"></td>
+              </tr>
+              <tr>
+                <td><input type="radio" name="phys_wound" value="mortally"></td>
+                <td>15-19 Mortally Wounded</td>
+                <td><input type="radio" name="ment_wound" value="mortally"></td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="wounds-note">
+            - Note: Any additional damage level, other than 0, that is lower than or equal to the character’s current wound level moves the character by one level toward death.<br>
+            * Characters are stunned until the end of the next round.<br>
+            † When 5-9 damage is applied against an already wounded character, the character is severely wounded.
+          </div>
+        </div>
+
+        <!-- Defenses & Weapons -->
+        <div class="frame-box">
+          <div class="frame-title">Defenses</div>
+          <div class="def-grid">
+            <div class="def-item">DODGE <input type="text" name="def_dodge"></div>
+            <div class="def-item">BLOCK <input type="text" name="def_block"></div>
+            <div class="def-item">PARRY <input type="text" name="def_parry"></div>
+            <div class="def-item">SOAK <input type="text" name="def_soak"></div>
+          </div>
+
+          <div class="frame-title" style="margin-top: 6px;">Attacks & Weapons</div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th>Weapon / Attack</th>
+                <th style="width: 50px;">Damage</th>
+                <th style="width: 50px;">Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" name="weapon_1_name"></td>
+                <td><input type="text" name="weapon_1_dmg"></td>
+                <td><input type="text" name="weapon_1_rng"></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="weapon_2_name"></td>
+                <td><input type="text" name="weapon_2_dmg"></td>
+                <td><input type="text" name="weapon_2_rng"></td>
+              </tr>
+              <tr>
+                <td><input type="text" name="weapon_3_name"></td>
+                <td><input type="text" name="weapon_3_dmg"></td>
+                <td><input type="text" name="weapon_3_rng"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- XP & Hero Points -->
+        <div class="points-container">
+          <div>
+            CHARACTER POINTS
+            <div><input type="number" name="xp_points" class="points-box"></div>
+          </div>
+          <div>
+            SPELL USE
+            <div><input type="number" name="spell_use" class="points-box"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- COLUMN 2: Might, Agility, Wit -->
+      <div class="column">
+        <!-- Might -->
+        <div class="frame-box">
+          <div class="attr-header">
+            <span class="attr-title">Might</span>
+            <input type="text" name="attr_might" class="attr-box">
+          </div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Skill</th>
+                <th style="text-align: left;">Specialization</th>
+                <th class="col-stat">D</th>
+                <th class="col-stat">+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Athletics</td><td><input type="text" name="skill_athletics_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_athletics_d"></td><td class="col-stat"><input type="text" name="skill_athletics_plus"></td></tr>
+              <tr><td>Brawling/Block</td><td><input type="text" name="skill_brawling_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_brawling_d"></td><td class="col-stat"><input type="text" name="skill_brawling_plus"></td></tr>
+              <tr><td>Lifting</td><td><input type="text" name="skill_lifting_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_lifting_d"></td><td class="col-stat"><input type="text" name="skill_lifting_plus"></td></tr>
+              <tr><td>Stamina</td><td><input type="text" name="skill_stamina_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_stamina_d"></td><td class="col-stat"><input type="text" name="skill_stamina_plus"></td></tr>
+            </tbody>
+          </table>
+          <div class="wounds-note" style="margin-top:4px;">* Unarmed and base melee damage is equal to Might.</div>
+        </div>
+
+        <!-- Agility -->
+        <div class="frame-box">
+          <div class="attr-header">
+            <span class="attr-title">Agility</span>
+            <input type="text" name="attr_agility" class="attr-box">
+          </div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Skill</th>
+                <th style="text-align: left;">Specialization</th>
+                <th class="col-stat">D</th>
+                <th class="col-stat">+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Acrobatics</td><td><input type="text" name="skill_acrobatics_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_acrobatics_d"></td><td class="col-stat"><input type="text" name="skill_acrobatics_plus"></td></tr>
+              <tr><td>Archery</td><td><input type="text" name="skill_archery_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_archery_d"></td><td class="col-stat"><input type="text" name="skill_archery_plus"></td></tr>
+              <tr><td>Dodge</td><td><input type="text" name="skill_dodge_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_dodge_d"></td><td class="col-stat"><input type="text" name="skill_dodge_plus"></td></tr>
+              <tr><td>Escape</td><td><input type="text" name="skill_escape_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_escape_d"></td><td class="col-stat"><input type="text" name="skill_escape_plus"></td></tr>
+              <tr><td>Shooting</td><td><input type="text" name="skill_shooting_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_shooting_d"></td><td class="col-stat"><input type="text" name="skill_shooting_plus"></td></tr>
+              <tr><td>Melee/Parry</td><td><input type="text" name="skill_melee_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_melee_d"></td><td class="col-stat"><input type="text" name="skill_melee_plus"></td></tr>
+              <tr><td>Piloting</td><td><input type="text" name="skill_piloting_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_piloting_d"></td><td class="col-stat"><input type="text" name="skill_piloting_plus"></td></tr>
+              <tr><td>Sneak</td><td><input type="text" name="skill_sneak_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_sneak_d"></td><td class="col-stat"><input type="text" name="skill_sneak_plus"></td></tr>
+              <tr><td>Riding</td><td><input type="text" name="skill_riding_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_riding_d"></td><td class="col-stat"><input type="text" name="skill_riding_plus"></td></tr>
+              <tr><td>Slight of Hand</td><td><input type="text" name="skill_slight_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_slight_d"></td><td class="col-stat"><input type="text" name="skill_slight_plus"></td></tr>
+              <tr><td>Throwing</td><td><input type="text" name="skill_throwing_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_throwing_d"></td><td class="col-stat"><input type="text" name="skill_throwing_plus"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Wit -->
+        <div class="frame-box">
+          <div class="attr-header">
+            <span class="attr-title">Wit</span>
+            <input type="text" name="attr_wit" class="attr-box">
+          </div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Skill</th>
+                <th style="text-align: left;">Specialization</th>
+                <th class="col-stat">D</th>
+                <th class="col-stat">+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Appraisal</td><td><input type="text" name="skill_appraisal_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_appraisal_d"></td><td class="col-stat"><input type="text" name="skill_appraisal_plus"></td></tr>
+              <tr><td>Business</td><td><input type="text" name="skill_business_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_business_d"></td><td class="col-stat"><input type="text" name="skill_business_plus"></td></tr>
+              <tr><td>Demolitions</td><td><input type="text" name="skill_demolitions_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_demolitions_d"></td><td class="col-stat"><input type="text" name="skill_demolitions_plus"></td></tr>
+              <tr><td>Forgery</td><td><input type="text" name="skill_forgery_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_forgery_d"></td><td class="col-stat"><input type="text" name="skill_forgery_plus"></td></tr>
+              <tr><td>Investigate</td><td><input type="text" name="skill_investigate_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_investigate_d"></td><td class="col-stat"><input type="text" name="skill_investigate_plus"></td></tr>
+              <tr><td>Languages</td><td><input type="text" name="skill_languages_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_languages_d"></td><td class="col-stat"><input type="text" name="skill_languages_plus"></td></tr>
+              <tr><td>Medicine</td><td><input type="text" name="skill_medicine_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_medicine_d"></td><td class="col-stat"><input type="text" name="skill_medicine_plus"></td></tr>
+              <tr><td>Navigation</td><td><input type="text" name="skill_navigation_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_navigation_d"></td><td class="col-stat"><input type="text" name="skill_navigation_plus"></td></tr>
+              <tr><td>Repair</td><td><input type="text" name="skill_repair_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_repair_d"></td><td class="col-stat"><input type="text" name="skill_repair_plus"></td></tr>
+              <tr><td>Scholar</td><td><input type="text" name="skill_scholar_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_scholar_d"></td><td class="col-stat"><input type="text" name="skill_scholar_plus"></td></tr>
+              <tr><td>Search</td><td><input type="text" name="skill_search_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_search_d"></td><td class="col-stat"><input type="text" name="skill_search_plus"></td></tr>
+              <tr><td>Set Traps</td><td><input type="text" name="skill_settraps_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_settraps_d"></td><td class="col-stat"><input type="text" name="skill_settraps_plus"></td></tr>
+              <tr><td>Street Smarts</td><td><input type="text" name="skill_streetsmarts_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_streetsmarts_d"></td><td class="col-stat"><input type="text" name="skill_streetsmarts_plus"></td></tr>
+              <tr><td>Survival</td><td><input type="text" name="skill_survival_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_survival_d"></td><td class="col-stat"><input type="text" name="skill_survival_plus"></td></tr>
+              <tr><td>Tracking</td><td><input type="text" name="skill_tracking_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_tracking_d"></td><td class="col-stat"><input type="text" name="skill_tracking_plus"></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+      <!-- COLUMN 3: Presence, Attune, Perks & Complications, Gear -->
+      <div class="column">
+        <!-- Presence -->
+        <div class="frame-box">
+          <div class="attr-header">
+            <span class="attr-title">Presence</span>
+            <input type="text" name="attr_presence" class="attr-box">
+          </div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Skill</th>
+                <th style="text-align: left;">Specialization</th>
+                <th class="col-stat">D</th>
+                <th class="col-stat">+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Animal Handling</td><td><input type="text" name="skill_animal_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_animal_d"></td><td class="col-stat"><input type="text" name="skill_animal_plus"></td></tr>
+              <tr><td>Charm</td><td><input type="text" name="skill_charm_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_charm_d"></td><td class="col-stat"><input type="text" name="skill_charm_plus"></td></tr>
+              <tr><td>Command</td><td><input type="text" name="skill_command_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_command_d"></td><td class="col-stat"><input type="text" name="skill_command_plus"></td></tr>
+              <tr><td>Deception</td><td><input type="text" name="skill_deception_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_deception_d"></td><td class="col-stat"><input type="text" name="skill_deception_plus"></td></tr>
+              <tr><td>Disguise</td><td><input type="text" name="skill_disguise_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_disguise_d"></td><td class="col-stat"><input type="text" name="skill_disguise_plus"></td></tr>
+              <tr><td>Intimidation</td><td><input type="text" name="skill_intimidation_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_intimidation_d"></td><td class="col-stat"><input type="text" name="skill_intimidation_plus"></td></tr>
+              <tr><td>Persuasion</td><td><input type="text" name="skill_persuasion_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_persuasion_d"></td><td class="col-stat"><input type="text" name="skill_persuasion_plus"></td></tr>
+              <tr><td>Willpower</td><td><input type="text" name="skill_willpower_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_willpower_d"></td><td class="col-stat"><input type="text" name="skill_willpower_plus"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Attunement -->
+        <div class="frame-box">
+          <div class="attr-header">
+            <span class="attr-title">Attunement</span>
+            <input type="text" name="attr_attune" class="attr-box">
+          </div>
+          <table class="skill-table">
+            <thead>
+              <tr>
+                <th style="text-align: left;">Skill</th>
+                <th style="text-align: left;">Specialization</th>
+                <th class="col-stat">D</th>
+                <th class="col-stat">+</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Sense Magic</td><td><input type="text" name="skill_sensemagic_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_sensemagic_d"></td><td class="col-stat"><input type="text" name="skill_sensemagic_plus"></td></tr>
+              <tr><td>Spell-weaving</td><td><input type="text" name="skill_spellweaving_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_spellweaving_d"></td><td class="col-stat"><input type="text" name="skill_spellweaving_plus"></td></tr>
+              <tr><td>Turn Undead</td><td><input type="text" name="skill_turnundead_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_turnundead_d"></td><td class="col-stat"><input type="text" name="skill_turnundead_plus"></td></tr>
+              <tr><td>Use Foci/Scroll</td><td><input type="text" name="skill_usefoci_spec" class="spec-input"></td><td class="col-stat"><input type="text" name="skill_usefoci_d"></td><td class="col-stat"><input type="text" name="skill_usefoci_plus"></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Perks & Complications (Moved Above Gear) -->
+        <div class="frame-box">
+          <div class="frame-title">Perks & Complications</div>
+          <textarea name="perks_complications" style="height: 75px;"></textarea>
+        </div>
+
+        <!-- Gear Text Area -->
+        <div class="frame-box">
+          <div class="frame-title">Gear</div>
+          <textarea name="gear" style="height: 220px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- PAGE 2: MAGIC RULES & TN REFERENCE TABLES -->
+    <div class="sheet-container page-2">
+
+      <!-- TOP BOX: MAGIC RULES OVERVIEW -->
+      <div class="frame-box full-width-col">
+        <div class="frame-title">Magic & Spell-Weaving</div>
+        <div class="rules-text">
+          <p>To use magic, a character must choose to allocate some of their attribute dice to the Attunement score. Characters who are attuned and also have Dice in Spell-weaving may declare they are weaving a spell, which has some limitations and caveats.</p>
+          <ol>
+            <li>A Spell-weaver may possess more skill dice in spell-weaving than they have in Attunement, but using more Skill Dice than Attunement is <strong>over channeling</strong>. Over channeling magic drains the weaver, potentially warping and twisting their bodies/minds. For every over-channel they must take a wound (Mental or Physical). At the end of the scene or next rest they roll against Might or Presence TN 15 and, if failed, the respective mutations table (Metamorphic).</li>
+            <li>Every successful cast drains the spell-weaver; their available Spell-weaving dice pool decreases by 1 each time. They may continue to weave spells at 0, but each cast is over-channelled.</li>
+            <li>Weaving Magic takes time; in combat a spell-weaver must declare they are weaving. If they are struck, they must make a Presence (Willpower) roll to not lose the spell. The spell takes effect at the end of the round.</li>
+          </ol>
+          <p style="margin-bottom:0;">When weaving a spell is declared, the expecting caster must declare the effect they’re weaving and then look at the casting tables to determine TN, using the highest.</p>
+        </div>
+      </div>
+
+      <!-- LEFT COLUMN PAGE 2: RANGE, DURATION, TARGET -->
+      <div class="column">
+        <!-- Range TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Range</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Effect Range</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Very Simple (TN 5)</td>
+                <td>Self / point blank / touch</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>(5 / 10 / 30)</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>(10 / 30 / 100)</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Hard (TN 20)</td>
+                <td>Everything within line of sight counts as short range.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Very Hard (TN 25)</td>
+                <td>Any distance, beyond where the caster can see.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Duration TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Duration</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Effect Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Very Simple (TN 5)</td>
+                <td>Instantaneous</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>Up to 1 round. The spell lasts until the caster’s next turn. It may not be sustained.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>The spell persists as long as it is sustained.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Hard (TN 20)</td>
+                <td>The spell persists for the remainder of the scene or up to 1 hour.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Very Hard (TN 25)</td>
+                <td>The spell persists for up to one day.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Legendary (TN 30)</td>
+                <td>The spell is permanent.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Target TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Target</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Target Scope</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Very Simple (TN 5)</td>
+                <td>The spell only targets the caster.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>The spell targets one being other than the caster or an object.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>The spell targets everything in a small area of up to 5 paces across.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Hard (TN 20)</td>
+                <td>The spell targets everything in an area up to 15 paces across.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Very Hard (TN 25)</td>
+                <td>The spell targets everything in an area up to 30 paces across.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN PAGE 2: NON-DAMAGE, DAMAGING, HEALING -->
+      <div class="column">
+        <!-- Non-Damage Effects TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Non-Damage Effects</div>
+          <div class="rules-note">(Non-damaging effects are the most difficult to adjudicate and require give and take between player and GM.)</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Effect Capability</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Very Simple (TN 5)</td>
+                <td>Produces obviously magical effects that can’t change or alter any target, or very minor abilities.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>Minor abilities. Breathe water. See in the dark. Clumsy telekinesis.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>Spells that control the mind or perception of another that may be sustained. Spells that enhance the target’s armor or combat ability.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Hard (TN 20)</td>
+                <td>Spells that grant greater abilities: Flight, Transformation into a tough creature no more than one scale factor larger/smaller than caster, or Mind/perception control lasting an entire scene.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Very Hard (TN 25)</td>
+                <td>Spells only skilled sorcerers can do. Minor abilities made permanent, but caster must sustain (incurs multi-action penalty until lapsed).</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Legendary (TN 30)</td>
+                <td>Resurrecting the dead. Time travel. Wish. Spells at this level may be made permanent without sustaining.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Damaging Effects TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Damaging Effects</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Damage Potential</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>Normal damage potential. As caster's attribute (Wit if spellcasting is a Wit skill, Charm otherwise).</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>Great damage potential. As the caster’s casting skill.</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rules-text" style="margin-top: 8px; font-size: 10.5px;">
+            <strong>Sustaining Damaging Spells:</strong> Damaging spells may be sustained (counts as one action every round). Every round sustained, caster must make another casting check at <strong>TN +5</strong> higher than previous round (part of sustain action).
+          </div>
+        </div>
+
+        <!-- Healing Effects TN Box -->
+        <div class="frame-box">
+          <div class="frame-title">Healing Effects</div>
+          <div class="rules-note">(Only 1 / day / Character)</div>
+          <table class="tn-table">
+            <thead>
+              <tr>
+                <th>Difficulty Level</th>
+                <th>Healing Scope</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="tn-badge">Very Simple (TN 5)</td>
+                <td>Waking a sleeping character or returning an unconscious character to consciousness without healing them.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Simple (TN 10)</td>
+                <td>Allowing the target a single check as natural healing.</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Moderate (TN 15)</td>
+                <td>Healing one wound level automatically (no healing check needed).</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Hard (TN 20)</td>
+                <td>Healing two wound levels automatically (no healing check needed).</td>
+              </tr>
+              <tr>
+                <td class="tn-badge">Very Hard (TN 25)</td>
+                <td>Healing 3 wound levels at once.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</body>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+  // 1. Radio button right-click unchecking logic
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('input[type="radio"]').forEach(radio => {
+      const handleRightClick = (e) => {
+        if (e.button === 2 || e.which === 3) {
+          e.preventDefault();
+          e.stopPropagation();
+          radio.checked = false;
+        }
+      };
+
+      ['pointerdown', 'mousedown', 'mouseup', 'auxclick', 'contextmenu'].forEach(eventType => {
+        radio.addEventListener(eventType, handleRightClick, true);
+      });
+    });
+  });
+
+  // 2. Portrait Functions (Missing in previous script)
+  function set_image(img, src) {
+    if (!img) return;
+    if (src && src.trim() !== '') {
+      img.src = src;
+      img.style.display = 'block';
+    } else {
+      img.removeAttribute('src');
+      img.style.display = 'none';
+    }
+  }
+
+  function load_portrait_file(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const base64Image = e.target.result;
+        const img = document.getElementById('portrait-image');
+        if (img) set_image(img, base64Image);
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function togglePortrait() {
+    const container = document.getElementById('portrait-container');
+    if (!container) return;
+    container.style.display = (container.style.display === 'none') ? 'block' : 'none';
+  }
+
+  // 3. Form Data Gathering
+  function getSheetData() {
+    const form = document.getElementById('characterSheet');
+    const formData = new FormData(form);
+    const data = {};
+
+    for (let [key, value] of formData.entries()) {
+      data[key] = value;
+    }
+
+    const inputs = form.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+      if (input.type === 'radio' || input.type === 'checkbox') {
+        if (input.checked) {
+          data[input.name] = input.value;
+        }
+      } else if (input.name) {
+        data[input.name] = input.value;
+      }
+    });
+
+    // Save Portrait Image Data & Visibility
+    const portraitImg = document.getElementById('portrait-image');
+    if (portraitImg && portraitImg.src) {
+      data.portrait_image = portraitImg.src;
+    }
+
+    const container = document.getElementById('portrait-container');
+    if (container) {
+      data.portrait_visible = (container.style.display !== 'none');
+    }
+
+    return data;
+  }
+
+  // 4. Form Data Populating
+  function loadSheetData(data) {
+    const form = document.getElementById('characterSheet');
+    form.reset();
+
+    // Restore Portrait Image & Visibility
+    const portraitImg = document.getElementById('portrait-image');
+    if (portraitImg) {
+      set_image(portraitImg, data.portrait_image || "");
+    }
+
+    const container = document.getElementById('portrait-container');
+    if (container) {
+      container.style.display = (data.portrait_visible === false) ? 'none' : 'block';
+    }
+
+    Object.keys(data).forEach(key => {
+      const value = data[key];
+      const elements = form.querySelectorAll(`[name="${key}"]`);
+
+      elements.forEach(element => {
+        if (element.type === 'radio' || element.type === 'checkbox') {
+          if (element.value === value) {
+            element.checked = true;
+          }
+        } else {
+          element.value = value;
+        }
+      });
+    });
+  }
+
+  // 5. LocalStorage Save
+  function saveToLocalStorage() {
+    const data = getSheetData();
+    localStorage.setItem('characterSheetData', JSON.stringify(data));
+    alert('Character saved to LocalStorage!');
+  }
+
+  // 6. LocalStorage Load
+  function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('characterSheetData');
+    if (savedData) {
+      loadSheetData(JSON.parse(savedData));
+      alert('Character loaded from LocalStorage!');
+    } else {
+      alert('No saved character found in LocalStorage.');
+    }
+  }
+
+  // 7. JSON Export
+  function exportJSON() {
+    const data = getSheetData();
+    const charName = data.character_name || 'character_sheet';
+    const jsonString = JSON.stringify(data, null, 2);
+
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${charName.toLowerCase().replace(/\s+/g, '_')}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  // 8. JSON Import
+  function importJSON(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      try {
+        const data = JSON.parse(e.target.result);
+        loadSheetData(data);
+        alert('Character sheet imported successfully!');
+      } catch (err) {
+        alert('Invalid JSON file format.');
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // 9. Reset Sheet
+  function resetSheet() {
+    if (confirm('Are you sure you want to clear the character sheet?')) {
+      document.getElementById('characterSheet').reset();
+      const portraitImg = document.getElementById('portrait-image');
+      if (portraitImg) set_image(portraitImg, "");
+      
+      const container = document.getElementById('portrait-container');
+      if (container) container.style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
